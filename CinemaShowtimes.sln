@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CinemaShowtimes.Api", "CinemaShowtimes.Api\CinemaShowtimes.Api.csproj", "{7761D106-7F97-4DD3-8C19-9ECF53DE32B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CinemaShowtimes.Domain", "CinemaShowtimes.Domain\CinemaShowtimes.Domain.csproj", "{E13AB80A-29FC-4E2D-8CFB-0FE44BF41EC6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CinemaShowtimes.Application", "CinemaShowtimes.Application\CinemaShowtimes.Application.csproj", "{3F0B2174-ABA6-4B2C-9234-61F949054C6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CinemaShowtimes.Infrastructure", "CinemaShowtimes.Infrastructure\CinemaShowtimes.Infrastructure.csproj", "{D2563172-FE40-4BF1-A435-DDEB6ACF4A57}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7761D106-7F97-4DD3-8C19-9ECF53DE32B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7761D106-7F97-4DD3-8C19-9ECF53DE32B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7761D106-7F97-4DD3-8C19-9ECF53DE32B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7761D106-7F97-4DD3-8C19-9ECF53DE32B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E13AB80A-29FC-4E2D-8CFB-0FE44BF41EC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E13AB80A-29FC-4E2D-8CFB-0FE44BF41EC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E13AB80A-29FC-4E2D-8CFB-0FE44BF41EC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E13AB80A-29FC-4E2D-8CFB-0FE44BF41EC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F0B2174-ABA6-4B2C-9234-61F949054C6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F0B2174-ABA6-4B2C-9234-61F949054C6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F0B2174-ABA6-4B2C-9234-61F949054C6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F0B2174-ABA6-4B2C-9234-61F949054C6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2563172-FE40-4BF1-A435-DDEB6ACF4A57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2563172-FE40-4BF1-A435-DDEB6ACF4A57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2563172-FE40-4BF1-A435-DDEB6ACF4A57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2563172-FE40-4BF1-A435-DDEB6ACF4A57}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
