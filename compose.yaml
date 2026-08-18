@@ -1,0 +1,17 @@
+﻿
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: cinema_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: LoansureHello
+      POSTGRES_DB: cinema_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - cinema_pgdata:/var/lib/postgresql/data
+
+volumes:
+  cinema_pgdata:

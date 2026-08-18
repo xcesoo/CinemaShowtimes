@@ -15,12 +15,23 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Controllers\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CinemaShowtimes.Application\CinemaShowtimes.Application.csproj" />
+      <ProjectReference Include="..\CinemaShowtimes.Domain\CinemaShowtimes.Domain.csproj" />
+      <ProjectReference Include="..\CinemaShowtimes.Infrastructure\CinemaShowtimes.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
