@@ -1,11 +1,12 @@
 using CinemaShowtimes.Infrastructure.Persistence.Configurations;
 using Domain.Entities;
+using Domain.Interfaces;
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace CinemaShowtimes.Infrastructure.Persistence;
 
-public class CinemaDbContext : DbContext
+public class CinemaDbContext : DbContext, IUnitOfWork
 {
     public DbSet<Movie>  Movies { get; set; }
     public DbSet<Auditorium> Auditoriums { get; set; }
