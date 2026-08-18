@@ -16,4 +16,9 @@ public class MovieRepository(CinemaDbContext dbContext) : IMovieRepository
     {
         return await dbContext.Movies.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id, cancellationToken);
     }
+
+    public async Task<IReadOnlyCollection<Movie>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Movies.AsNoTracking().ToListAsync(cancellationToken);
+    }
 }

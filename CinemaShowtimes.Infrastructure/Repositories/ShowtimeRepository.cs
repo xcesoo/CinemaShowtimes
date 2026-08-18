@@ -20,4 +20,9 @@ public class ShowtimeRepository : IShowtimeRepository
     {
         return await _dbContext.Showtimes.FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
     }
+
+    public async Task<IReadOnlyCollection<Showtime>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Showtimes.AsNoTracking().ToListAsync(cancellationToken);
+    }
 }
