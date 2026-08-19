@@ -1,8 +1,12 @@
 using Application;
 using CinemaShowtimes.Infrastructure;
 using CinemaShowtimes.Infrastructure.Extensions;
+using CinemaShowtimes.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddExceptionHandler<GlobalExceptionsHandler>();
+builder.Services.AddProblemDetails();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -22,6 +26,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseExceptionHandler();
 
 app.UseAuthorization();
 
