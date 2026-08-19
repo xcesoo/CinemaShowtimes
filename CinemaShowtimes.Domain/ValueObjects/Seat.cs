@@ -1,3 +1,5 @@
+using Domain.Exceptions;
+
 namespace Domain.ValueObjects;
 
 public record Seat
@@ -9,7 +11,7 @@ public record Seat
 
     public static Seat Create(short row, short number)
     {
-        if (row < 1 || number < 1) throw new ArgumentOutOfRangeException();
+        if (row < 1 || number < 1) throw new DomainException($"Invalid seat R{row} N{number}");
         
         return new Seat()
         {

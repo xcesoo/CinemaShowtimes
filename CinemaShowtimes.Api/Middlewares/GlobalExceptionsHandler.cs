@@ -17,19 +17,7 @@ public class GlobalExceptionsHandler(ILogger<GlobalExceptionsHandler> logger) : 
         {
             case KeyNotFoundException:
                 problemDetails.Status = StatusCodes.Status404NotFound;
-                problemDetails.Title = "Resource not found";
-                problemDetails.Detail = exception.Message;
-                break;
-            
-            case ArgumentException or InvalidOperationException:
-                problemDetails.Status = StatusCodes.Status400BadRequest;
-                problemDetails.Title = "Bad request";
-                problemDetails.Detail = exception.Message;
-                break;
-            
-            case UnauthorizedAccessException:
-                problemDetails.Status = StatusCodes.Status401Unauthorized;
-                problemDetails.Title = "Unauthorized";
+                problemDetails.Title = "Key not found";
                 problemDetails.Detail = exception.Message;
                 break;
             

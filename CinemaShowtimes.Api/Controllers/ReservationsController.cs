@@ -1,3 +1,4 @@
+using Application.Commands.Reservations;
 using Application.Queries.Reservations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,14 +17,18 @@ public class ReservationsController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost]
-    public Task<IActionResult> ReserveSeats(CancellationToken cancellationToken)
+    public async Task<IActionResult> ReserveSeats(
+        [FromBody] ReserveSeatsCommand command, 
+        CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var result = await mediator.Send(command, cancellationToken);
+        return CreatedAtAction(nameof(GetById), new { id = result.ReservationId }, new { result });
     }
 
     [HttpPatch("{id:guid}/confirm")]
-    public Task<IActionResult> Confirm(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Confirm(Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await mediator.Send(new ConfirmReservationCommand(id), cancellationToken);
+        return NoContent(); 
     }
 }
