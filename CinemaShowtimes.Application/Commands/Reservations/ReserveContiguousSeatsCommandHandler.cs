@@ -13,11 +13,14 @@ public class ReserveContiguousSeatsCommandHandler(
     IAuditoriumRepository auditoriumRepository,
     IReservationRepository reservationRepository,
     IMovieRepository movieRepository,
-    IUnitOfWork unitOfWork) 
+    IUnitOfWork unitOfWork,
+    TimeProvider timeProvider) 
     : IRequestHandler<ReserveContiguousSeatsCommand, ReservationResultDto>
 {
     public async Task<ReservationResultDto> Handle(ReserveContiguousSeatsCommand request, CancellationToken cancellationToken)
     {
+        var now = timeProvider.GetUtcNow();
+        
         if (request.SeatCount <= 0)
             throw new DomainException("Seat count must be greater than zero.");
 
@@ -34,7 +37,7 @@ public class ReserveContiguousSeatsCommandHandler(
             var movie = await movieRepository.GetByIdAsync(showtime.MovieId, cancellationToken);
 
             var activeReservations = await reservationRepository
-                .GetActiveReservationsForShowtimeAsync(request.ShowtimeId, cancellationToken);
+                .GetActiveReservationsForShowtimeAsync(request.ShowtimeId, now, cancellationToken);
 
             var takenSeats = activeReservations.SelectMany(r => r.Seats).ToHashSet();
 
@@ -78,7 +81,7 @@ public class ReserveContiguousSeatsCommandHandler(
                 throw new DomainException($"Could not find {request.SeatCount} contiguous seats together for this showtime.");
             }
 
-            var reservation = Reservation.Create(request.ShowtimeId, contiguousSeats);
+            var reservation = Reservation.Create(request.ShowtimeId, contiguousSeats, now);
 
             await reservationRepository.AddAsync(reservation, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);

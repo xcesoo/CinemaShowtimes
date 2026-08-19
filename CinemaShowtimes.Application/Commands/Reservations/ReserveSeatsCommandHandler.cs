@@ -13,11 +13,14 @@ public class ReserveSeatsCommandHandler(
     IAuditoriumRepository auditoriumRepository,
     IReservationRepository reservationRepository,
     IMovieRepository movieRepository,
-    IUnitOfWork unitOfWork) 
+    IUnitOfWork unitOfWork,
+    TimeProvider timeProvider) 
     : IRequestHandler<ReserveSeatsCommand, ReservationResultDto>
 {
     public async Task<ReservationResultDto> Handle(ReserveSeatsCommand request, CancellationToken cancellationToken)
     {
+        var now = timeProvider.GetUtcNow();
+        
         if (request.Seats is null || request.Seats.Count == 0)
             throw new DomainException("At least one seat must be selected.");
             
@@ -46,7 +49,7 @@ public class ReserveSeatsCommandHandler(
             }
 
             var activeReservations = await reservationRepository
-                .GetActiveReservationsForShowtimeAsync(request.ShowtimeId, cancellationToken);
+                .GetActiveReservationsForShowtimeAsync(request.ShowtimeId, now, cancellationToken);
 
             var takenSeats = activeReservations.SelectMany(r => r.Seats).ToHashSet();
 
@@ -57,7 +60,7 @@ public class ReserveSeatsCommandHandler(
                 throw new DomainException($"The following seats are already reserved or sold: {overlappingSeatsStr}");
             }
 
-            var reservation = Reservation.Create(request.ShowtimeId, requestedSeats);
+            var reservation = Reservation.Create(request.ShowtimeId, requestedSeats, now);
 
             await reservationRepository.AddAsync(reservation, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);

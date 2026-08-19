@@ -5,31 +5,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CinemaShowtimes.Infrastructure.Repositories;
 
-public class ReservationRepository : IReservationRepository
+public class ReservationRepository(CinemaDbContext dbContext) : IReservationRepository
 {
-    private readonly CinemaDbContext _dbContext;
-
-    public ReservationRepository(CinemaDbContext dbContext) => _dbContext = dbContext;
-
     public async Task AddAsync(Reservation reservation, CancellationToken cancellationToken = default)
     {
-        await _dbContext.Reservations.AddAsync(reservation, cancellationToken);
+        await dbContext.Reservations.AddAsync(reservation, cancellationToken);
     }
 
     public async Task<Reservation?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Reservations
+        return await dbContext.Reservations
             .Include(r => r.Seats)
             .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<Reservation>> GetActiveReservationsForShowtimeAsync(
         Guid showtimeId, 
+        DateTimeOffset currentTime,
         CancellationToken cancellationToken = default)
     {
-        var expirationTime = DateTimeOffset.UtcNow.AddMinutes(-10);
+        var expirationTime = currentTime.AddMinutes(-10); 
 
-        return await _dbContext.Reservations
+        return await dbContext.Reservations
             .AsNoTracking()
             .Include(r => r.Seats)
             .Where(r => r.ShowtimeId == showtimeId && (r.IsConfirmed || r.CreatedAt > expirationTime))

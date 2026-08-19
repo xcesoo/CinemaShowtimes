@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using Domain.ValueObjects;
 
 namespace Domain.Entities;
@@ -14,7 +15,7 @@ public class Reservation
     
     private Reservation(){} //for ef core
 
-    public static Reservation Create(Guid showtimeId, IEnumerable<Seat> seats)
+    public static Reservation Create(Guid showtimeId, IEnumerable<Seat> seats, DateTimeOffset createdAt)
     {
         ArgumentNullException.ThrowIfNull(seats);
         var seatList = seats.ToList();
@@ -25,22 +26,22 @@ public class Reservation
         {
             Id = Guid.CreateVersion7(),
             ShowtimeId = showtimeId,
-            CreatedAt = DateTimeOffset.UtcNow,
+            CreatedAt = createdAt,
             IsConfirmed = false,
         };
         reservation._seats.AddRange(seatList);
         
         return reservation;
     }
-    public bool IsExpired()
+    public bool IsExpired(DateTimeOffset currentTime)
     {
-        return DateTimeOffset.UtcNow > CreatedAt.AddMinutes(10);
+        return !IsConfirmed && CreatedAt <= currentTime.AddMinutes(-10);
     }
-    public void Confirm()
+    public void Confirm(DateTimeOffset currentTime)
     {
-        if (IsExpired())
+        if (IsExpired(currentTime))
         {
-            throw new Exception("Reservation has expired and cannot be confirmed.");
+            throw new DomainException("Reservation has expired and cannot be confirmed.");
         }
         IsConfirmed = true;
     }

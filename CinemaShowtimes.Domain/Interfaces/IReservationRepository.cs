@@ -10,5 +10,6 @@ public interface IReservationRepository
     
     Task<IReadOnlyCollection<Reservation>> GetActiveReservationsForShowtimeAsync(
         Guid showtimeId, 
+        DateTimeOffset currentTime,
         CancellationToken cancellationToken = default);
 }

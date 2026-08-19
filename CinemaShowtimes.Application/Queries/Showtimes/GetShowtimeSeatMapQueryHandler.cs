@@ -7,11 +7,14 @@ namespace Application.Queries.Showtimes;
 public class GetShowtimeSeatMapQueryHandler(
     IShowtimeRepository showtimeRepository,
     IAuditoriumRepository auditoriumRepository,
-    IReservationRepository reservationRepository) 
+    IReservationRepository reservationRepository,
+    TimeProvider timeProvider) 
     : IRequestHandler<GetShowtimeSeatMapQuery, ShowtimeSeatMapDto?>
 {
     public async Task<ShowtimeSeatMapDto?> Handle(GetShowtimeSeatMapQuery request, CancellationToken cancellationToken)
     {
+        var now = timeProvider.GetUtcNow();
+        
         var showtime = await showtimeRepository.GetByIdAsync(request.Id, cancellationToken);
         if (showtime is null) return null;
 
@@ -19,7 +22,7 @@ public class GetShowtimeSeatMapQueryHandler(
         if (auditorium is null) return null;
         
         var activeReservations = await reservationRepository
-            .GetActiveReservationsForShowtimeAsync(request.Id, cancellationToken);
+            .GetActiveReservationsForShowtimeAsync(request.Id, now, cancellationToken);
 
         var soldSeats = new HashSet<(short Row, short Number)>();
         var reservedSeats = new HashSet<(short Row, short Number)>();

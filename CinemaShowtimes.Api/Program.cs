@@ -19,6 +19,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 
+builder.Services.AddSingleton(TimeProvider.System);
+
 var app = builder.Build();
 
 //seeding
