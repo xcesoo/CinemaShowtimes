@@ -1,5 +1,6 @@
 using Application;
 using CinemaShowtimes.Infrastructure;
+using CinemaShowtimes.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,9 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 
 var app = builder.Build();
+
+//seeding
+await app.Services.InitializeDatabaseAsync();
 
 if (app.Environment.IsDevelopment())
 {
