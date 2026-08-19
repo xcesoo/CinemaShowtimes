@@ -1,6 +1,7 @@
 using Domain.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CinemaShowtimes.Middlewares;
 
@@ -25,6 +26,13 @@ public class GlobalExceptionsHandler(ILogger<GlobalExceptionsHandler> logger) : 
                 problemDetails.Status = StatusCodes.Status400BadRequest;
                 problemDetails.Title = "Bad request";
                 problemDetails.Detail = exception.Message;
+                break;
+            
+            case DbUpdateException:
+            case InvalidOperationException { InnerException: DbUpdateException }:
+                problemDetails.Status = StatusCodes.Status409Conflict;
+                problemDetails.Title = "Concurrency Conflict";
+                problemDetails.Detail = "The requested seats were just reserved by someone else. Please refresh the seat map and try again.";
                 break;
             
             default:

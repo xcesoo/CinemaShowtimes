@@ -1,3 +1,4 @@
+using System.Data;
 using CinemaShowtimes.Infrastructure.Persistence.Configurations;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -18,5 +19,13 @@ public class CinemaDbContext : DbContext, IUnitOfWork
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MovieConfiguration).Assembly); 
+    }
+    
+    async Task<IDomainTransaction> IUnitOfWork.BeginTransactionAsync(
+        IsolationLevel isolationLevel, 
+        CancellationToken cancellationToken)
+    {
+        var efTransaction = await Database.BeginTransactionAsync(isolationLevel, cancellationToken);
+        return new EfTransactionWrapper(efTransaction);
     }
 }
