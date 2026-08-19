@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,6 +30,12 @@ public class GlobalExceptionsHandler(ILogger<GlobalExceptionsHandler> logger) : 
             case UnauthorizedAccessException:
                 problemDetails.Status = StatusCodes.Status401Unauthorized;
                 problemDetails.Title = "Unauthorized";
+                problemDetails.Detail = exception.Message;
+                break;
+            
+            case DomainException:
+                problemDetails.Status = StatusCodes.Status400BadRequest;
+                problemDetails.Title = "Bad request";
                 problemDetails.Detail = exception.Message;
                 break;
             
