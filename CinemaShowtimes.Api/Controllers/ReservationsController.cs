@@ -31,4 +31,17 @@ public class ReservationsController(IMediator mediator) : ControllerBase
         await mediator.Send(new ConfirmReservationCommand(id), cancellationToken);
         return NoContent(); 
     }
+    
+    [HttpPost("contiguous")]
+    public async Task<IActionResult> ReserveContiguousSeats(
+        [FromBody] ReserveContiguousSeatsCommand command, 
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(command, cancellationToken);
+        
+        return CreatedAtAction(
+            actionName: nameof(GetById), 
+            routeValues: new { id = result.ReservationId }, 
+            value: result);
+    }
 }

@@ -8,24 +8,23 @@ using MediatR;
 
 namespace Application.Commands.Reservations;
 
-public class ReserveSeatsCommandHandler(
+public class ReserveContiguousSeatsCommandHandler(
     IShowtimeRepository showtimeRepository,
     IAuditoriumRepository auditoriumRepository,
     IReservationRepository reservationRepository,
     IMovieRepository movieRepository,
     IUnitOfWork unitOfWork) 
-    : IRequestHandler<ReserveSeatsCommand, ReservationResultDto>
+    : IRequestHandler<ReserveContiguousSeatsCommand, ReservationResultDto>
 {
-    public async Task<ReservationResultDto> Handle(ReserveSeatsCommand request, CancellationToken cancellationToken)
+    public async Task<ReservationResultDto> Handle(ReserveContiguousSeatsCommand request, CancellationToken cancellationToken)
     {
-        if (request.Seats is null || request.Seats.Count == 0)
-            throw new DomainException("At least one seat must be selected.");
-            
+        if (request.SeatCount <= 0)
+            throw new DomainException("Seat count must be greater than zero.");
+
         await using var transaction = await unitOfWork.BeginTransactionAsync(IsolationLevel.Serializable, cancellationToken);
 
         try
         {
-
             var showtime = await showtimeRepository.GetByIdAsync(request.ShowtimeId, cancellationToken)
                            ?? throw new DomainException($"Showtime with ID {request.ShowtimeId} not found.");
 
@@ -34,36 +33,58 @@ public class ReserveSeatsCommandHandler(
 
             var movie = await movieRepository.GetByIdAsync(showtime.MovieId, cancellationToken);
 
-            var requestedSeats = request.Seats
-                .Select(s => Seat.Create(s.Row, s.Number))
-                .ToList();
-
-            var invalidSeats = requestedSeats.Except(auditorium.Seats).ToList();
-            if (invalidSeats.Count > 0)
-            {
-                var invalidSeatsStr = string.Join(", ", invalidSeats.Select(s => $"R{s.Row} N{s.Number}"));
-                throw new DomainException($"The following seats do not exist in the auditorium: {invalidSeatsStr}");
-            }
-
             var activeReservations = await reservationRepository
                 .GetActiveReservationsForShowtimeAsync(request.ShowtimeId, cancellationToken);
 
             var takenSeats = activeReservations.SelectMany(r => r.Seats).ToHashSet();
 
-            var overlappingSeats = requestedSeats.Intersect(takenSeats).ToList();
-            if (overlappingSeats.Count > 0)
+            var availableSeats = auditorium.Seats.Except(takenSeats).ToList();
+
+            List<Seat>? contiguousSeats = null;
+
+            foreach (var rowGroup in availableSeats.GroupBy(s => s.Row).OrderBy(g => g.Key))
             {
-                var overlappingSeatsStr = string.Join(", ", overlappingSeats.Select(s => $"R{s.Row} N{s.Number}"));
-                throw new DomainException($"The following seats are already reserved or sold: {overlappingSeatsStr}");
+                var rowSeats = rowGroup.OrderBy(s => s.Number).ToList();
+                
+                if (rowSeats.Count < request.SeatCount)
+                    continue;
+
+                for (int i = 0; i <= rowSeats.Count - request.SeatCount; i++)
+                {
+                    bool isContiguous = true;
+
+                    for (int j = 0; j < request.SeatCount - 1; j++)
+                    {
+                        if (rowSeats[i + j + 1].Number != rowSeats[i + j].Number + 1)
+                        {
+                            isContiguous = false;
+                            break;
+                        }
+                    }
+
+                    if (isContiguous)
+                    {
+                        contiguousSeats = rowSeats.GetRange(i, request.SeatCount);
+                        break;
+                    }
+                }
+
+                if (contiguousSeats is not null)
+                    break;
             }
 
-            var reservation = Reservation.Create(request.ShowtimeId, requestedSeats);
+            if (contiguousSeats is null)
+            {
+                throw new DomainException($"Could not find {request.SeatCount} contiguous seats together for this showtime.");
+            }
+
+            var reservation = Reservation.Create(request.ShowtimeId, contiguousSeats);
 
             await reservationRepository.AddAsync(reservation, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
-            
+
             await transaction.CommitAsync(cancellationToken);
-            
+
             return new ReservationResultDto(
                 reservation.Id,
                 reservation.Seats.Count,
