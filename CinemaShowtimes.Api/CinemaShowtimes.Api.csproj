@@ -26,10 +26,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\CinemaShowtimes.Application\CinemaShowtimes.Application.csproj" />
       <ProjectReference Include="..\CinemaShowtimes.Domain\CinemaShowtimes.Domain.csproj" />
       <ProjectReference Include="..\CinemaShowtimes.Infrastructure\CinemaShowtimes.Infrastructure.csproj" />
