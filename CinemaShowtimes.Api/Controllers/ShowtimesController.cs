@@ -31,8 +31,9 @@ public class ShowtimesController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet("{id:guid}/seats")]
-    public Task<IActionResult> GetSeatMap(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetSeatMap(Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var seatMap = await mediator.Send(new GetShowtimeSeatMapQuery(id), cancellationToken);
+        return seatMap is not null ? Ok(seatMap) : NotFound();
     }
 }

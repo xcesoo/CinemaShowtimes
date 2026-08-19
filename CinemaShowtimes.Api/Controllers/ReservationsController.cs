@@ -21,7 +21,7 @@ public class ReservationsController(IMediator mediator) : ControllerBase
         throw new NotImplementedException();
     }
 
-    [HttpPut("{id:guid}/confirm")]
+    [HttpPatch("{id:guid}/confirm")]
     public Task<IActionResult> Confirm(Guid id, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
