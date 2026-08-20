@@ -1,5 +1,7 @@
 using Application.Commands.Reservations;
+using Application.DTOs;
 using Application.Queries.Reservations;
+using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +12,8 @@ namespace CinemaShowtimes.Controllers;
 public class ReservationsController(IMediator mediator) : ControllerBase
 {
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(Reservation), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         var reservation = await mediator.Send(new GetReservationByIdQuery(id), cancellationToken);
@@ -17,6 +21,9 @@ public class ReservationsController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(typeof(ReservationResultDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public async Task<IActionResult> ReserveSeats(
         [FromBody] ReserveSeatsCommand command, 
         CancellationToken cancellationToken)
@@ -26,6 +33,9 @@ public class ReservationsController(IMediator mediator) : ControllerBase
     }
 
     [HttpPatch("{id:guid}/confirm")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Confirm(Guid id, CancellationToken cancellationToken)
     {
         await mediator.Send(new ConfirmReservationCommand(id), cancellationToken);
@@ -33,6 +43,9 @@ public class ReservationsController(IMediator mediator) : ControllerBase
     }
     
     [HttpPost("contiguous")]
+    [ProducesResponseType(typeof(ReservationResultDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public async Task<IActionResult> ReserveContiguousSeats(
         [FromBody] ReserveContiguousSeatsCommand command, 
         CancellationToken cancellationToken)

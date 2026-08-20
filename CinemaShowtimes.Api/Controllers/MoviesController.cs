@@ -1,5 +1,6 @@
 using Application.Commands.Movies;
 using Application.Queries.Movies;
+using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace CinemaShowtimes.Controllers;
 public class MoviesController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(typeof(IReadOnlyCollection<Movie>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var movies = await mediator.Send(new GetAllMoviesQuery(), cancellationToken);
@@ -17,6 +19,8 @@ public class MoviesController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(Movie), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         var movie = await mediator.Send(new GetMovieByIdQuery(id), cancellationToken);
@@ -24,6 +28,8 @@ public class MoviesController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateMovieCommand command, CancellationToken cancellationToken)
     {
         var id = await mediator.Send(command, cancellationToken);

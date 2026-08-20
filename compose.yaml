@@ -1,5 +1,4 @@
-﻿
-services:
+﻿services:
   db:
     image: postgres:16-alpine
     container_name: cinema_db
@@ -12,6 +11,26 @@ services:
       - "5432:5432"
     volumes:
       - cinema_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d cinema_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: cinemashowtimes-api
+    container_name: cinema_api
+    build:
+      context: .
+      dockerfile: CinemaShowtimes.Api/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Database=cinema_dev;Username=admin;Password=LoansureHello
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   cinema_pgdata:

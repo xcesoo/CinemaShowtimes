@@ -2,22 +2,26 @@
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
-EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["CinemaShowtimes/CinemaShowtimes.csproj", "CinemaShowtimes/"]
-RUN dotnet restore "CinemaShowtimes/CinemaShowtimes.csproj"
+
+COPY ["CinemaShowtimes.Api/CinemaShowtimes.Api.csproj", "CinemaShowtimes.Api/"]
+COPY ["CinemaShowtimes.Application/CinemaShowtimes.Application.csproj", "CinemaShowtimes.Application/"]
+COPY ["CinemaShowtimes.Domain/CinemaShowtimes.Domain.csproj", "CinemaShowtimes.Domain/"]
+COPY ["CinemaShowtimes.Infrastructure/CinemaShowtimes.Infrastructure.csproj", "CinemaShowtimes.Infrastructure/"]
+RUN dotnet restore "CinemaShowtimes.Api/CinemaShowtimes.Api.csproj"
+
 COPY . .
-WORKDIR "/src/CinemaShowtimes"
-RUN dotnet build "./CinemaShowtimes.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/CinemaShowtimes.Api"
+RUN dotnet build "CinemaShowtimes.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./CinemaShowtimes.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "CinemaShowtimes.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "CinemaShowtimes.dll"]
+ENTRYPOINT ["dotnet", "CinemaShowtimes.Api.dll"]
