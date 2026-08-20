@@ -22,7 +22,7 @@ public class ReservationsController(IMediator mediator) : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await mediator.Send(command, cancellationToken);
-        return CreatedAtAction(nameof(GetById), new { id = result.ReservationId }, new { result });
+        return CreatedAtAction(nameof(GetById), new { id = result.ReservationId }, result );
     }
 
     [HttpPatch("{id:guid}/confirm")]
@@ -38,10 +38,7 @@ public class ReservationsController(IMediator mediator) : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await mediator.Send(command, cancellationToken);
-        
-        return CreatedAtAction(
-            actionName: nameof(GetById), 
-            routeValues: new { id = result.ReservationId }, 
-            value: result);
+
+        return CreatedAtAction(nameof(GetById), new { id = result.ReservationId }, result);
     }
 }

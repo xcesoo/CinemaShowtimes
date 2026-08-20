@@ -12,7 +12,14 @@ internal class EfTransactionWrapper(IDbContextTransaction transaction) : IDomain
 
     public async Task RollbackAsync(CancellationToken cancellationToken = default)
     {
-        await transaction.RollbackAsync(cancellationToken);
+        try
+        {
+            await transaction.RollbackAsync(cancellationToken);
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     public async ValueTask DisposeAsync()

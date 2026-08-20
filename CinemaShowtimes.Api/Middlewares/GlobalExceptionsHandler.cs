@@ -30,6 +30,7 @@ public class GlobalExceptionsHandler(ILogger<GlobalExceptionsHandler> logger) : 
             
             case DbUpdateException:
             case InvalidOperationException { InnerException: DbUpdateException }:
+            case { } e when e.Message.Contains("40001: could not serialize access"):
                 problemDetails.Status = StatusCodes.Status409Conflict;
                 problemDetails.Title = "Concurrency Conflict";
                 problemDetails.Detail = "The requested seats were just reserved by someone else. Please refresh the seat map and try again.";
