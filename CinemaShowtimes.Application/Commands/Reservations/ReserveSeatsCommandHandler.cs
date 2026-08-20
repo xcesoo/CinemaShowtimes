@@ -23,6 +23,9 @@ public class ReserveSeatsCommandHandler(
         
         if (request.Seats is null || request.Seats.Count == 0)
             throw new DomainException("At least one seat must be selected.");
+        
+        if (request.Seats.Count != request.Seats.Distinct().Count())
+            throw new DomainException("Duplicate seats are not allowed.");
             
         await using var transaction = await unitOfWork.BeginTransactionAsync(IsolationLevel.Serializable, cancellationToken);
 

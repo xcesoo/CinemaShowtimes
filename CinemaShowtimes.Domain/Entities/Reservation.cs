@@ -22,6 +22,9 @@ public class Reservation
         if (seatList.Count == 0) 
             throw new ArgumentException("Reservation must contain at least one seat.", nameof(seats));
         
+        if (seatList.Count != seatList.Distinct().Count())
+            throw new DomainException("Reservation cannot contain duplicate seats.");
+        
         var reservation = new Reservation()
         {
             Id = Guid.CreateVersion7(),

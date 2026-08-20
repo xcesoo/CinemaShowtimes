@@ -33,13 +33,17 @@ public class GlobalExceptionsHandler(ILogger<GlobalExceptionsHandler> logger) : 
             case { } e when e.Message.Contains("40001: could not serialize access"):
                 problemDetails.Status = StatusCodes.Status409Conflict;
                 problemDetails.Title = "Concurrency Conflict";
-                problemDetails.Detail = "The requested seats were just reserved by someone else. Please refresh the seat map and try again.";
+                problemDetails.Detail = "The requested seats were just reserved by someone else. Please refresh the seat map and try again";
                 break;
             
             default:
+                logger.LogError(
+                    exception,
+                    "Unhandled exception while processing {Path}",
+                    httpContext.Request.Path);
                 problemDetails.Status = StatusCodes.Status500InternalServerError;
                 problemDetails.Title = "Internal server error";
-                problemDetails.Detail = exception.Message;
+                problemDetails.Detail = "An unexpected exception occured";
                 break;
         }
         httpContext.Response.StatusCode = problemDetails.Status.Value;
